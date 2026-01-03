@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🧪 AI Lab
+# AI Lab
 
 **Test and compare AI models across multiple providers in one place**
 
@@ -9,30 +9,30 @@
 [![Prisma](https://img.shields.io/badge/Prisma-SQLite-2D3748?logo=prisma)](https://www.prisma.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-[Features](#-features) • [Quick Start](#-quick-start) • [Usage](#-usage) • [Architecture](#-architecture) • [Contributing](#-contributing)
+[Features](#features) • [Quick Start](#quick-start) • [Usage](#usage) • [Architecture](#architecture) • [Contributing](#contributing)
 
 </div>
 
 ---
 
-## ✨ Features
+## Features
 
 | Feature | Description |
 |---------|-------------|
-| 🔌 **Multi-Provider** | OpenAI, Anthropic, Google Gemini, DeepSeek, and Local (Ollama/LM Studio) |
-| 🔍 **Dynamic Models** | Auto-discovers available models from your API keys |
-| 📝 **Prompt Templates** | Create reusable prompts with `{{variables}}` |
-| ⚡ **Batch Testing** | Run against multiple models simultaneously |
-| 📊 **Compare Results** | Side-by-side output, latency, and cost comparison |
-| ✅ **Validation** | Expected-contains and JSON schema validation |
-| 💰 **Cost Tracking** | Real-time token usage and cost estimation |
-| 🔒 **Secure Storage** | AES-256-GCM encrypted API keys |
-| 🔄 **Rerun** | Re-execute runs individually or in batches |
-| 🖼️ **SVG Preview** | Renders SVG outputs with copy functionality |
+| **Multi-Provider** | OpenAI, Anthropic, Google Gemini, DeepSeek, and Local (Ollama/LM Studio) |
+| **Dynamic Models** | Auto-discovers available models from your API keys |
+| **Prompt Templates** | Create reusable prompts with `{{variables}}` |
+| **Batch Testing** | Run against multiple models simultaneously |
+| **Compare Results** | Side-by-side output, latency, and cost comparison |
+| **Validation** | Expected-contains and JSON schema validation |
+| **Cost Tracking** | Real-time token usage and cost estimation |
+| **Secure Storage** | AES-256-GCM encrypted API keys |
+| **Rerun** | Re-execute runs individually or in batches |
+| **SVG Preview** | Renders SVG outputs with copy functionality |
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -82,15 +82,15 @@ npx prisma db push
 npm run dev
 ```
 
-Open **http://localhost:3000** 🎉
+Open **http://localhost:3000**
 
 ---
 
-## 📖 Usage
+## Usage
 
-### 1️⃣ Add API Keys
+### 1. Add API Keys
 
-Navigate to **Dashboard** → **API Keys** section → **Add Key**
+Navigate to **Dashboard** > **API Keys** section > **Add Key**
 
 | Provider | What you need |
 |----------|---------------|
@@ -100,10 +100,10 @@ Navigate to **Dashboard** → **API Keys** section → **Add Key**
 | DeepSeek | API key from [platform.deepseek.com](https://platform.deepseek.com/) |
 | Local | Base URL (e.g., `http://localhost:11434` for Ollama) |
 
-### 2️⃣ Create a Test
+### 2. Create a Test
 
 ```
-Tests → New Test
+Tests > New Test
 ```
 
 - **Name**: Descriptive test name
@@ -118,25 +118,25 @@ Summarize the following text in {{style}} style:
 {{text}}
 ```
 
-### 3️⃣ Run Tests
+### 3. Run Tests
 
-1. Open your test → **Run Test**
+1. Open your test > **Run Test**
 2. Select models to compare
 3. Override variables if needed
 4. Click **Execute**
 
-### 4️⃣ Compare Results
+### 4. Compare Results
 
 View results with:
-- ✅ Pass/fail status
-- ⏱️ Latency (ms)
-- 🔢 Token counts
-- 💵 Estimated cost
-- 📄 Full output with SVG preview
+- Pass/fail status
+- Latency (ms)
+- Token counts
+- Estimated cost
+- Full output with SVG preview
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -185,7 +185,7 @@ src/
 
 ---
 
-## 🔒 Security
+## Security
 
 | Layer | Implementation |
 |-------|----------------|
@@ -196,15 +196,15 @@ src/
 
 ---
 
-## 🔧 Configuration
+## Configuration
 
 ### Environment Variables
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `DATABASE_URL` | ✅ | SQLite path: `file:./dev.db` |
-| `APP_ENCRYPTION_KEY` | ✅ | 64-char hex for API key encryption |
-| `JWT_SECRET` | ✅ | 64-char hex for session tokens |
+| `DATABASE_URL` | Yes | SQLite path: `file:./dev.db` |
+| `APP_ENCRYPTION_KEY` | Yes | 64-char hex for API key encryption |
+| `JWT_SECRET` | Yes | 64-char hex for session tokens |
 
 ### Rate Limiting
 
@@ -217,7 +217,7 @@ const MAX_RUNS_PER_MINUTE = 10;
 
 ---
 
-## 🔌 Adding Providers
+## Adding Providers
 
 1. Create adapter in `src/lib/providers/`:
 
@@ -237,7 +237,7 @@ export class NewProviderAdapter extends BaseProviderAdapter {
 
 ---
 
-## 📤 Export Data
+## Export Data
 
 ```bash
 # JSON export
@@ -252,7 +252,7 @@ GET /api/export?format=json&testId=<id>
 
 ---
 
-## 🗄️ Database Migration (PostgreSQL)
+## Database Migration (PostgreSQL)
 
 ```prisma
 // prisma/schema.prisma
@@ -272,7 +272,7 @@ npx prisma migrate dev
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions welcome! Please:
 
@@ -284,16 +284,6 @@ Contributions welcome! Please:
 
 ---
 
-## 📄 License
+## License
 
-MIT © [Luccama700](https://github.com/Luccama700)
-
----
-
-<div align="center">
-
-**[⬆ Back to Top](#-ai-lab)**
-
-Made with ❤️ for AI developers
-
-</div>
+MIT - [Luccama700](https://github.com/Luccama700)
