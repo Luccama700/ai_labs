@@ -1,325 +1,299 @@
-# AI Lab - AI Model Testing & Comparison Platform
+<div align="center">
 
-A production-ready MVP web app for testing and comparing AI models across multiple providers.
+# 🧪 AI Lab
 
-## Features
+**Test and compare AI models across multiple providers in one place**
 
-- **Multi-Provider Support**: OpenAI, Anthropic, Google Gemini, DeepSeek, and Local/OpenAI-compatible endpoints
-- **API Key Management**: Secure encrypted storage with AES-256-GCM
-- **Test Definitions**: Create reusable tests with prompt templates and variables
-- **Batch Execution**: Run tests against multiple models with configurable batch counts
-- **Validation**: Expected-contains and JSON schema validation for pass/fail determination
-- **Cost Estimation**: Per-provider/model pricing with automatic cost calculation
-- **Run History**: Full history with metrics, outputs, and export capabilities
-- **Model Comparison**: Side-by-side output comparison across models
-- **Rate Limiting**: Built-in protection against accidental spend loops
-- **Dry Run Mode**: Estimate costs without calling providers
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![Prisma](https://img.shields.io/badge/Prisma-SQLite-2D3748?logo=prisma)](https://www.prisma.io/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+[Features](#-features) • [Quick Start](#-quick-start) • [Usage](#-usage) • [Architecture](#-architecture) • [Contributing](#-contributing)
+
+</div>
 
 ---
 
-## Architecture Overview
+## ✨ Features
 
-### Components
-
-\`\`\`
-┌─────────────────────────────────────────────────────────────────┐
-│                        Next.js App Router                        │
-├─────────────────────────────────────────────────────────────────┤
-│  Pages (UI)           │  Server Actions       │  API Routes      │
-│  - /dashboard         │  - keys.ts            │  - /api/export   │
-│  - /keys              │  - tests.ts           │                  │
-│  - /tests             │  - runs.ts            │                  │
-│  - /runs              │  - auth.ts            │                  │
-│  - /compare           │                       │                  │
-├─────────────────────────────────────────────────────────────────┤
-│                       Library Layer                              │
-├──────────────┬──────────────┬───────────────┬──────────────────┤
-│ auth.ts      │ encryption.ts│ test-runner.ts│ validation.ts    │
-│ (JWT/bcrypt) │ (AES-256-GCM)│ (orchestration)│ (pass/fail)     │
-├──────────────┴──────────────┴───────────────┴──────────────────┤
-│                    Provider Adapter Layer                        │
-├──────────────┬──────────────┬───────────────┬──────────────────┤
-│ OpenAI       │ Anthropic    │ Google        │ DeepSeek         │
-│ Adapter      │ Adapter      │ Adapter       │ Adapter          │
-│              │              │               │                  │
-│              │    Local/OpenAI-Compatible Adapter              │
-├──────────────┴──────────────┴───────────────┴──────────────────┤
-│                         Prisma + SQLite                          │
-└─────────────────────────────────────────────────────────────────┘
-\`\`\`
-
-### Data Flow
-
-1. **API Key Storage**:
-   - User enters API key → Key encrypted with AES-256-GCM → Stored as (encryptedKey, iv, authTag)
-   - Only last 4 chars visible after save; full key never returned to client
-
-2. **Test Execution**:
-   - Test selected → Variables substituted → Rate limit checked
-   - Key decrypted (server-side only) → Provider adapter called
-   - Response captured → Tokens counted → Cost calculated → Validation run
-   - Run record created with all metrics
-
-3. **Security Boundaries**:
-   - API keys: Encrypted at rest, decrypted only for provider calls, never logged
-   - Auth: Password hashed with bcrypt, sessions via HTTP-only JWT cookies
-   - All provider calls: Server-side only (no client-side API access)
-
-### Database Schema
-
-- **User**: Authentication (email, hashed password)
-- **ApiKey**: Encrypted API keys with provider info
-- **Test**: Test definitions with prompts, variables, validation rules
-- **Run**: Execution records with metrics and outputs
-- **RateLimit**: Per-user rate limiting tracking
+| Feature | Description |
+|---------|-------------|
+| 🔌 **Multi-Provider** | OpenAI, Anthropic, Google Gemini, DeepSeek, and Local (Ollama/LM Studio) |
+| 🔍 **Dynamic Models** | Auto-discovers available models from your API keys |
+| 📝 **Prompt Templates** | Create reusable prompts with `{{variables}}` |
+| ⚡ **Batch Testing** | Run against multiple models simultaneously |
+| 📊 **Compare Results** | Side-by-side output, latency, and cost comparison |
+| ✅ **Validation** | Expected-contains and JSON schema validation |
+| 💰 **Cost Tracking** | Real-time token usage and cost estimation |
+| 🔒 **Secure Storage** | AES-256-GCM encrypted API keys |
+| 🔄 **Rerun** | Re-execute runs individually or in batches |
+| 🖼️ **SVG Preview** | Renders SVG outputs with copy functionality |
 
 ---
 
-## Setup Guide
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js 18+ 
-- npm or yarn
+- **Node.js** 18+
+- **npm** or **yarn**
 
-### Quick Start
+### Installation
 
-1. **Clone and install dependencies**:
-   \`\`\`bash
-   cd ai_labs
-   npm install
-   \`\`\`
+```bash
+# Clone the repo
+git clone https://github.com/Luccama700/ai_labs.git
+cd ai_labs
 
-2. **Configure environment variables**:
-   \`\`\`bash
-   # Copy the example file
-   cp .env.example .env
-   
-   # Generate encryption keys (run these commands)
-   openssl rand -hex 32  # Copy output to APP_ENCRYPTION_KEY
-   openssl rand -hex 32  # Copy output to JWT_SECRET
-   
-   # Edit .env with your generated keys
-   \`\`\`
+# Install dependencies
+npm install
 
-3. **Initialize the database**:
-   \`\`\`bash
-   npx prisma generate
-   npx prisma db push
-   \`\`\`
+# Set up environment
+cp .env.example .env
+```
 
-4. **Run the development server**:
-   \`\`\`bash
-   npm run dev
-   \`\`\`
+### Generate Encryption Keys
 
-5. **Open the app**:
-   Navigate to [http://localhost:3000](http://localhost:3000)
+```bash
+# Generate APP_ENCRYPTION_KEY
+openssl rand -hex 32
 
-6. **Create an account**:
-   - Register with email/password
-   - Add your AI provider API keys
-   - Create your first test
+# Generate JWT_SECRET  
+openssl rand -hex 32
+```
+
+Add both keys to your `.env` file:
+
+```env
+DATABASE_URL="file:./dev.db"
+APP_ENCRYPTION_KEY="your-64-char-hex-key"
+JWT_SECRET="your-64-char-hex-key"
+```
+
+### Initialize & Run
+
+```bash
+# Set up database
+npx prisma generate
+npx prisma db push
+
+# Start dev server
+npm run dev
+```
+
+Open **http://localhost:3000** 🎉
+
+---
+
+## 📖 Usage
+
+### 1️⃣ Add API Keys
+
+Navigate to **Dashboard** → **API Keys** section → **Add Key**
+
+| Provider | What you need |
+|----------|---------------|
+| OpenAI | API key from [platform.openai.com](https://platform.openai.com/api-keys) |
+| Anthropic | API key from [console.anthropic.com](https://console.anthropic.com/) |
+| Google | API key from [aistudio.google.com](https://aistudio.google.com/app/apikey) |
+| DeepSeek | API key from [platform.deepseek.com](https://platform.deepseek.com/) |
+| Local | Base URL (e.g., `http://localhost:11434` for Ollama) |
+
+### 2️⃣ Create a Test
+
+```
+Tests → New Test
+```
+
+- **Name**: Descriptive test name
+- **Prompt**: Your prompt text (use `{{variable}}` for dynamic values)
+- **Variables**: Default values as JSON
+- **Validation** (optional): Expected output strings or JSON schema
+
+**Example prompt:**
+```
+Summarize the following text in {{style}} style:
+
+{{text}}
+```
+
+### 3️⃣ Run Tests
+
+1. Open your test → **Run Test**
+2. Select models to compare
+3. Override variables if needed
+4. Click **Execute**
+
+### 4️⃣ Compare Results
+
+View results with:
+- ✅ Pass/fail status
+- ⏱️ Latency (ms)
+- 🔢 Token counts
+- 💵 Estimated cost
+- 📄 Full output with SVG preview
+
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                      Next.js 14 App Router                       │
+├─────────────────────────────────────────────────────────────────┤
+│  Pages                │  Server Actions      │  API Routes       │
+│  • /dashboard         │  • auth.ts           │  • /api/export    │
+│  • /tests             │  • keys.ts           │                   │
+│  • /runs              │  • tests.ts          │                   │
+│  • /compare           │  • runs.ts           │                   │
+├─────────────────────────────────────────────────────────────────┤
+│                        Core Libraries                            │
+│  auth.ts │ encryption.ts │ test-runner.ts │ validation.ts       │
+├─────────────────────────────────────────────────────────────────┤
+│                     Provider Adapters                            │
+│  OpenAI │ Anthropic │ Google │ DeepSeek │ Local                 │
+├─────────────────────────────────────────────────────────────────┤
+│                      Prisma + SQLite                             │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Project Structure
+
+```
+src/
+├── app/
+│   ├── (authenticated)/     # Protected routes
+│   │   ├── dashboard/       # Main dashboard
+│   │   ├── tests/           # Test CRUD & execution
+│   │   ├── runs/            # Run history & details
+│   │   └── compare/         # Model comparison
+│   ├── actions/             # Server actions
+│   ├── api/                 # REST endpoints
+│   ├── login/               # Auth pages
+│   └── register/
+├── components/
+│   └── ui/                  # Reusable components
+├── lib/
+│   ├── providers/           # AI provider adapters
+│   ├── auth.ts              # JWT authentication
+│   ├── encryption.ts        # AES-256-GCM
+│   └── test-runner.ts       # Orchestration
+└── prisma/
+    └── schema.prisma        # Database schema
+```
+
+---
+
+## 🔒 Security
+
+| Layer | Implementation |
+|-------|----------------|
+| **API Keys** | AES-256-GCM encryption at rest |
+| **Passwords** | bcrypt hashing (12 rounds) |
+| **Sessions** | HTTP-only JWT cookies (7-day expiry) |
+| **Provider Calls** | Server-side only, keys never exposed to client |
+
+---
+
+## 🔧 Configuration
 
 ### Environment Variables
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| \`DATABASE_URL\` | Yes | SQLite database path (default: \`file:./dev.db\`) |
-| \`APP_ENCRYPTION_KEY\` | Yes | 64-char hex key for API key encryption |
-| \`JWT_SECRET\` | Yes | 64-char hex key for session tokens |
+| `DATABASE_URL` | ✅ | SQLite path: `file:./dev.db` |
+| `APP_ENCRYPTION_KEY` | ✅ | 64-char hex for API key encryption |
+| `JWT_SECRET` | ✅ | 64-char hex for session tokens |
 
-### Generate Secure Keys
+### Rate Limiting
 
-\`\`\`bash
-# On macOS/Linux:
-openssl rand -hex 32
+Default: **10 runs/minute** per user
 
-# On Windows (PowerShell):
--join ((1..32) | ForEach-Object {'{0:X2}' -f (Get-Random -Max 256)})
-\`\`\`
-
----
-
-## Usage Guide
-
-### Adding API Keys
-
-1. Navigate to **API Keys** page
-2. Click **Add API Key**
-3. Enter a name, select provider, paste your key
-4. For local/custom endpoints, enter the base URL (e.g., \`http://localhost:11434\`)
-5. Click **Test** to verify the connection
-6. Key is encrypted and stored; only last 4 chars visible
-
-### Creating Tests
-
-1. Navigate to **Tests** → **Create Test**
-2. Enter test name and description
-3. Write your prompt (use \`{{variableName}}\` for dynamic values)
-4. Add default variables as JSON: \`{"name": "Alice", "task": "summarize"}\`
-5. Optional: Add validation rules:
-   - **Expected Contains**: String that must appear in output
-   - **JSON Schema**: Schema for structured output validation
-
-### Running Tests
-
-1. Go to test detail page → **Run Test**
-2. Select models to test against (provider + model + API key)
-3. Override variables if needed
-4. Set batch count (1-10 runs per model)
-5. Toggle **Dry Run** to estimate cost without calling APIs
-6. Click **Run Test**
-
-### Comparing Models
-
-1. Navigate to **Compare** page
-2. Select a test
-3. View side-by-side comparison of:
-   - Pass rates
-   - Average latency
-   - Total cost
-   - Output content
-
-### Exporting Data
-
-Export runs as JSON or CSV:
-\`\`\`
-/api/export?format=json
-/api/export?format=csv
-/api/export?format=json&testId=<test-id>
-\`\`\`
+Modify in `src/lib/rate-limit.ts`:
+```typescript
+const MAX_RUNS_PER_MINUTE = 10;
+```
 
 ---
 
-## Folder Structure
+## 🔌 Adding Providers
 
-\`\`\`
-ai_labs/
-├── prisma/
-│   └── schema.prisma      # Database schema
-├── src/
-│   ├── app/
-│   │   ├── (authenticated)/  # Protected pages
-│   │   │   ├── dashboard/
-│   │   │   ├── keys/
-│   │   │   ├── tests/
-│   │   │   ├── runs/
-│   │   │   └── compare/
-│   │   ├── actions/         # Server actions
-│   │   │   ├── auth.ts
-│   │   │   ├── keys.ts
-│   │   │   ├── tests.ts
-│   │   │   └── runs.ts
-│   │   ├── api/
-│   │   │   └── export/      # Export route
-│   │   ├── login/
-│   │   └── register/
-│   ├── components/
-│   │   ├── ui/              # Reusable UI components
-│   │   └── navbar.tsx
-│   └── lib/
-│       ├── providers/       # Provider adapters
-│       │   ├── index.ts     # Router
-│       │   ├── types.ts     # Interfaces
-│       │   ├── openai.ts
-│       │   ├── anthropic.ts
-│       │   ├── google.ts
-│       │   ├── deepseek.ts
-│       │   └── local.ts
-│       ├── auth.ts          # Authentication
-│       ├── db.ts            # Prisma client
-│       ├── encryption.ts    # AES-256-GCM
-│       ├── pricing.ts       # Cost estimation
-│       ├── rate-limit.ts    # Rate limiting
-│       ├── test-runner.ts   # Test orchestration
-│       ├── utils.ts         # Utilities
-│       └── validation.ts    # Pass/fail validation
-├── .env                     # Environment variables
-├── .env.example             # Example environment
-└── package.json
-\`\`\`
+1. Create adapter in `src/lib/providers/`:
+
+```typescript
+export class NewProviderAdapter extends BaseProviderAdapter {
+  readonly name = 'newprovider';
+  readonly displayName = 'New Provider';
+  
+  async testConnection(apiKey: string): Promise<ProviderTestResult> { ... }
+  async complete(request: ProviderRequest): Promise<ProviderResponse> { ... }
+  async fetchAvailableModels(apiKey: string): Promise<string[]> { ... }
+}
+```
+
+2. Register in `src/lib/providers/index.ts`
+3. Add pricing in `src/lib/pricing.ts`
 
 ---
 
-## Security Considerations
+## 📤 Export Data
 
-1. **API Keys**: Never stored in plaintext; AES-256-GCM encrypted with authenticated encryption
-2. **Encryption Key**: Must be 32 bytes (64 hex chars); app fails to start if missing
-3. **Passwords**: Hashed with bcrypt (12 rounds)
-4. **Sessions**: HTTP-only cookies with JWT; 7-day expiry
-5. **Provider Calls**: Server-side only; keys never sent to client
-6. **Error Handling**: API keys are redacted from error messages
+```bash
+# JSON export
+GET /api/export?format=json
 
----
+# CSV export  
+GET /api/export?format=csv
 
-## Adding New Providers
-
-1. Create adapter in \`src/lib/providers/\`:
-   \`\`\`typescript
-   export class NewProviderAdapter extends BaseProviderAdapter {
-     readonly name = 'newprovider';
-     readonly displayName = 'New Provider';
-     
-     async testConnection(apiKey: string): Promise<ProviderTestResult> { ... }
-     async complete(request: ProviderRequest): Promise<ProviderResponse> { ... }
-     getDefaultModel(): string { ... }
-     getSupportedModels(): string[] { ... }
-   }
-   \`\`\`
-
-2. Register in \`src/lib/providers/index.ts\`:
-   \`\`\`typescript
-   const newProvider = new NewProviderAdapter();
-   adapters.set(newProvider.name, newProvider);
-   \`\`\`
-
-3. Add pricing in \`src/lib/pricing.ts\`:
-   \`\`\`typescript
-   newprovider: {
-     name: 'newprovider',
-     displayName: 'New Provider',
-     defaultModel: 'model-name',
-     models: {
-       'model-name': { inputPer1M: 1.00, outputPer1M: 2.00 },
-     },
-   },
-   \`\`\`
-
-4. Add to provider select options in UI components
+# Filter by test
+GET /api/export?format=json&testId=<id>
+```
 
 ---
 
-## Rate Limiting
+## 🗄️ Database Migration (PostgreSQL)
 
-Default: 10 runs per minute per user
+```prisma
+// prisma/schema.prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+```
 
-To modify, edit \`MAX_RUNS_PER_MINUTE\` in \`src/lib/rate-limit.ts\`
+```bash
+# Update .env
+DATABASE_URL="postgresql://user:pass@localhost:5432/ailab"
 
----
-
-## Migrating to PostgreSQL
-
-1. Update \`schema.prisma\`:
-   \`\`\`prisma
-   datasource db {
-     provider = "postgresql"
-     url      = env("DATABASE_URL")
-   }
-   \`\`\`
-
-2. Update \`DATABASE_URL\` in \`.env\`:
-   \`\`\`
-   DATABASE_URL="postgresql://user:pass@localhost:5432/ailab"
-   \`\`\`
-
-3. Run migrations:
-   \`\`\`bash
-   npx prisma migrate dev
-   \`\`\`
+# Run migration
+npx prisma migrate dev
+```
 
 ---
 
-## License
+## 🤝 Contributing
 
-MIT
+Contributions welcome! Please:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+MIT © [Luccama700](https://github.com/Luccama700)
+
+---
+
+<div align="center">
+
+**[⬆ Back to Top](#-ai-lab)**
+
+Made with ❤️ for AI developers
+
+</div>
